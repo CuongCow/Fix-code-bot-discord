@@ -1,18 +1,23 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 
-const rawPort = process.env["PORT"];
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
+const DEFAULT_PORT = 8080;
+const envPort = process.env["PORT"];
+const normalizedPort =
+  envPort && envPort !== "undefined" && envPort !== "null"
+    ? envPort
+    : String(DEFAULT_PORT);
+const port = Number(normalizedPort);
 
 if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
+  throw new Error(`Invalid PORT value: "${envPort}"`);
+}
+
+if (normalizedPort !== envPort) {
+  logger.warn(
+    { fallbackPort: port, receivedPort: envPort },
+    "PORT was not provided. Falling back to default port.",
+  );
 }
 
 app.listen(port, (err) => {
