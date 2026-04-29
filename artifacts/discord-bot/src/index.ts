@@ -41,9 +41,8 @@ const token = process.env["DISCORD_BOT_TOKEN"];
 
 if (!token) {
   console.error(
-    "DISCORD_BOT_TOKEN environment variable is required but was not provided.",
+    "DISCORD_BOT_TOKEN environment variable was not provided. Bot login is disabled; only health-check server will run.",
   );
-  process.exit(1);
 }
 
 const PARENT_CATEGORY_NAME = "DANH MỤC TLE";
@@ -1920,7 +1919,9 @@ http.createServer((req, res) => {
   console.log(`Health check server listening on port ${healthPort}`);
 });
 
-client.login(token).catch((err) => {
-  console.error("Failed to login:", err);
-  process.exit(1);
-});
+if (token) {
+  client.login(token).catch((err) => {
+    console.error("Failed to login:", err);
+    process.exit(1);
+  });
+}
